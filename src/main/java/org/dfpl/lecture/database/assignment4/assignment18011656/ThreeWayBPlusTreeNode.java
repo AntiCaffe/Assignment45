@@ -16,5 +16,30 @@ public class ThreeWayBPlusTreeNode {
 		this.keyList.add(in);
 		this.children = children;
 	} //생성자 지정
+
+	public ThreeWayBPlusTreeNode getParent() {
+		return parent;
+	}
+
+	public void setParent(ThreeWayBPlusTreeNode parent) {
+		this.parent = parent;
+	}
+
+	public List<Integer> getKeyList() {
+		return keyList;
+	}
+
+	public void setKeyList(List<Integer> keyList) {
+		this.keyList = keyList;
+	}
+
+	public List<ThreeWayBPlusTreeNode> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<ThreeWayBPlusTreeNode> children) {
+		this.children = children;
+	}
+
 }
 

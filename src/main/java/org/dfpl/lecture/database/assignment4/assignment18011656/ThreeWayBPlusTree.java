@@ -67,6 +67,12 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	 * Note: Bottom의 LinkedList 순회를 하면 안됨
 	 */
 	public void inorderTraverse() {
+		ThreeWayBPlusTreeNode now = root.getChildren().get(0);
+		if(root.getChildren() != null)
+		{
+			inorderTraverse();
+		}
+
 		// TODO Auto-generated method stub
 	}
 
@@ -122,11 +128,40 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	public boolean add(Integer e) {
 		if(root == null){
 			ThreeWayBPlusTreeNode newnode = new ThreeWayBPlusTreeNode(null,e,null);
-			root = newnode;
 			leafList.add(newnode);
-		}
+			root = leafList.getFirst();
+		} // root 가 null 값일때 노드 추가
+
 		else {
-			if(leafList.getLast().size)
+			if(leafList.getLast().getKeyList().size() >= 2){
+				ThreeWayBPlusTreeNode newnode = new ThreeWayBPlusTreeNode(root,e,null);
+				ThreeWayBPlusTreeNode parent = leafList.getLast().getParent();
+				int input  = leafList.getLast().getKeyList().remove(1); //분할점
+				parent.getKeyList().add(input);
+				newnode.getKeyList().add(input);
+				newnode.getKeyList().add(e);
+				leafList.addLast(newnode);
+				leafList.getLast().setParent(parent);
+
+				///부모노드로 이동해서 유효성 검사
+				while(parent != null)
+				{
+					if(parent.getKeyList().size()>2)
+					{
+
+					}
+				}
+
+
+
+			}
+			else {
+				leafList.getLast().getKeyList().add(e);
+			}
+
+
+
+
 		}
 		// TODO Auto-generated method stub
 		return false;
