@@ -1,6 +1,6 @@
 package org.dfpl.lecture.database.assignment4.assignment18011656;
 
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class ThreeWayBPlusTreeNode {
@@ -11,10 +11,12 @@ public class ThreeWayBPlusTreeNode {
 	private List<ThreeWayBPlusTreeNode> children;
 
 
-	public ThreeWayBPlusTreeNode(ThreeWayBPlusTreeNode parent,int in, List<ThreeWayBPlusTreeNode> children) {
-		this.parent = parent;
-		this.keyList.add(in);
-		this.children = children;
+	public ThreeWayBPlusTreeNode(ThreeWayBPlusTreeNode parent,int in, ThreeWayBPlusTreeNode e) {
+			this.parent = parent;
+			this.keyList = new ArrayList<>();
+			this.children = new ArrayList<>();
+			this.keyList.add(in);
+			this.children.add(e);
 	} //생성자 지정
 
 	public ThreeWayBPlusTreeNode getParent() {
