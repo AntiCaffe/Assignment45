@@ -36,22 +36,29 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	 * @return
 	 */
 	public ThreeWayBPlusTreeNode getNode(Integer key) {
-		System.out.println("start finding"+key);
-		ThreeWayBPlusTreeNode search = root;
-		while(search.getChildren().size() != 0) {
-			if (search.getKeyList().get(0) > key) {
-				System.out.println("less than " + search.getKeyList().get(0));
-				search = search.getChildren().get(0);
+		System.out.println("start finding "+key); //탐색 시작
+		ThreeWayBPlusTreeNode search = root; //루트노드 받아옴
+		while(search.getChildren().size() > 0) { //리프노드 까지만 이동
+			if (search.getKeyList().get(0) > key) { //현재 노드 값보다 목표값이 작으면
+				System.out.println("less than " + search.getKeyList().get(0)); //작다는 문장 출력
+				search = search.getChildren().get(0); //왼쪽으로 이동
 			}
-			else {
-				System.out.println("larger than or equal to" + search.getKeyList().get(0));
-				search = search.getChildren().get(1);
+			else { //목표값이 더 크면
+				System.out.println("larger than or equal to " + search.getKeyList().get(0)); //크거나 같다 출력
+				search = search.getChildren().get(1); //오른쪽으로 이동
 			}
 		}
+		for(int i = 0; i< search.getKeyList().size(); i++) //리프노드에서 탐색 시작
+		{
+			if(search.getKeyList().get(i) == key) { //리프노드의 키리스트 전부 확인
+				System.out.println(key + " found"); //찾으면 출력과 함께 함수 종료
+				return null;
+			}
+		}
+		System.out.println(key+" not found"); //못찾으면 출력 후 함수 종료
+		return  null;
 
 
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	/**
@@ -81,10 +88,16 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	 * Note: Bottom의 LinkedList 순회를 하면 안됨
 	 */
 	public void inorderTraverse() {
-		for(int i = 0; i<leafList.size(); i++)
+		ThreeWayBPlusTreeNode search = root;
+		System.out.println(leafList.getFirst().getKeyList().get(0));
+		while(search.getChildren().size() > 0)
 		{
-			System.out.println(leafList.get(i).getKeyList());
+			for(int i = 0; i<search.getKeyList().size(); i++)
+			{
+
+			}
 		}
+
 		// TODO Auto-generated method stub
 	}
 
@@ -137,46 +150,77 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	}
 
 	@Override
-	public boolean add(Integer e) { //리프노드서 부터 올리는 bottom-up 방식으로 구현했습니다.
+	public boolean add(Integer e) {
 		if(leafList.size() == 0){
 			ThreeWayBPlusTreeNode newnode = new ThreeWayBPlusTreeNode(null,e,null);
 			leafList.add(newnode);
 			root = leafList.getLast();
 		} //맨 처음 노드 추가
-
-		//root가 null 아닐때
 		else {
-			leafList.getLast().getKeyList().add(e);
+			ThreeWayBPlusTreeNode search = root;
+
+			while(search.getChildren().size() >0) //더해야할 리프노드 찾기
+			{
+				if(search.getKeyList().size() ==2)
+				{
+					if(search.getKeyList().get(0) > e)
+						search = search.getChildren().get(0);
+					else if(search.getKeyList().get(1) <= e)
+						search = search.getChildren().get(2);
+					else
+						search = search.getChildren().get(1);
+
+				}
+				if(search.getKeyList().size() == 1)
+				{
+					if(search.getKeyList().get(0) > e)
+						search = search.getChildren().get(0);
+					else
+						search = search.getChildren().get(1);
+				}
+			}
+			System.out.println(e);
+			if(search.getParent() != null)
+				System.out.println(search.getParent().getKeyList()+"더해야할곳 부모");
+
+			System.out.println(search.getKeyList()+"더해야할곳");
+
+			search.getKeyList().add(e); // 찾아서 더해주기
+			search.getKeyList().sort(Integer::compareTo); // 정렬
+
 			//leaf노드 분할 할때
-			if(leafList.getLast().getKeyList().size() > 2){
-				int input = leafList.getLast().getKeyList().remove(1); //분할점
-				int input2 = leafList.getLast().getKeyList().remove(1); //분할점 뒤의 값
+			if(search.getKeyList().size() > 2){
+				int input = search.getKeyList().remove(1); //분할점
+				int input2 = search.getKeyList().remove(1); //분할점 뒤의 값
 
-				ThreeWayBPlusTreeNode newleaf = new ThreeWayBPlusTreeNode(leafList.getLast().getParent(),input,null); //새 리프 노드 & 최근 노드 부모와 동일하게 설정
+				ThreeWayBPlusTreeNode newleaf = new ThreeWayBPlusTreeNode(search.getParent(),input,null); //새 리프 노드 & 최근 노드 부모와 동일하게 설정
 				newleaf.getKeyList().add(input2);
-				leafList.addLast(newleaf); //리프 리스트에 새 리프 노드 연결
+				leafList.add(leafList.indexOf(search)+1,newleaf); //리프 리스트에 새 리프 노드 연결
 
 
-				if(leafList.getLast().getParent() == null) { // 부모 노드 없을때
+				if(search.getParent() == null) { // 부모 노드 없을때
 
-					ThreeWayBPlusTreeNode newparent = new ThreeWayBPlusTreeNode(null,input,leafList.get(leafList.size()-1));//새 부모 노드
-					newparent.getChildren().add(leafList.get(leafList.size()-2)); //새 부모노드에 기존 차일드 등록
-					newparent.getChildren().add(leafList.getLast()); //새 부모노드에 차일드 등록
+					ThreeWayBPlusTreeNode newparent = new ThreeWayBPlusTreeNode(null,input,null);//새 부모 노드
+					newparent.getChildren().add(leafList.getFirst()); //새 부모노드에 기존 차일드 등록
+					newparent.getChildren().add(leafList.getLast()); //새 부모노드에 새 차일드 등록
 
 					leafList.getLast().setParent(newparent); //새 리프노드에 부모 등록
-					leafList.get(leafList.size()-1).setParent(newparent);//기존 리프노드에 부모 등록
+					leafList.get(leafList.size()-2).setParent(newparent);//기존 리프노드에 부모 등록
 
-					root = newparent;
+					root = newparent; //새 루트노드
 				}
 
 				//부모 노드 있을때
 				else{
-					leafList.getLast().getParent().getKeyList().add(input);
-					leafList.getLast().getParent().getChildren().add(leafList.getLast());
+					search.getParent().getKeyList().add(input);
+					search.getParent().getKeyList().sort(Integer::compareTo);
+					search.getParent().getChildren().add(search.getParent().getChildren().indexOf(search)+1,newleaf);
 				}
 			}
 
-			ThreeWayBPlusTreeNode parent = leafList.getLast().getParent(); //마지막 리프노드 부모 받아오기
+			ThreeWayBPlusTreeNode parent = search.getParent();//수정했던 노드의 부모 노드 받아오기
+
+
 
 			while(parent != null){
 				if(parent.getKeyList().size() > 2) { //부모 노드 분할 필요할때
@@ -195,12 +239,16 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 					}
 					else { //최상위 노드가 아니라면
 						parent.getParent().getKeyList().add(parent.getKeyList().remove(parent.getKeyList().size()-1));
+						parent.getParent().getKeyList().sort(Integer::compareTo);
+
 						rightnode.setParent(parent.getParent());
 						parent.getParent().getChildren().add(rightnode);
 					}
 					//왼쪽 노드에서 2개 끌고옴
 					rightnode.getChildren().add(parent.getChildren().remove(parent.getChildren().size()-2));
+					rightnode.getChildren().get(rightnode.getChildren().size()-1).setParent(rightnode);
 					rightnode.getChildren().add(parent.getChildren().remove(parent.getChildren().size()-1));
+					rightnode.getChildren().get(rightnode.getChildren().size()-1).setParent(rightnode);
 				}
 
 				else { //상위 노드로 이동
