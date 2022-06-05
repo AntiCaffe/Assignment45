@@ -109,7 +109,7 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	}
 	public void inorderrecurs(ThreeWayBPlusTreeNode t)
 	{
-		if(t.getChildren().size() > 0)
+		if(t.getChildren().size() > 0) //중위 순회 구현
 		{
 			inorderrecurs(t.getChildren().get(0));
 			System.out.println(t.getKeyList().get(0));
@@ -126,13 +126,13 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	@Override
 	public Integer first() {
 		// TODO Auto-generated method stub
-		return leafList.getFirst().getKeyList().get(leafList.getFirst().getKeyList().size()-1);
+		return leafList.getFirst().getKeyList().get(0); //리프노드 첫번째값 반환
 	}
 
 	@Override
 	public Integer last() {
 		// TODO Auto-generated method stub
-		return leafList.getLast().getKeyList().get(leafList.getLast().getKeyList().size()-1);
+		return leafList.getLast().getKeyList().get(leafList.getLast().getKeyList().size()-1); //리프노드 마지막 값 반환
 	}
 
 	@Override
@@ -299,7 +299,16 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 
 	@Override
 	public boolean remove(Object o) {
-		// TODO Auto-generated method stub
+		for(ThreeWayBPlusTreeNode a : leafList)
+		{
+			for(int i = 0; i<a.getKeyList().size(); i++)
+			{
+				if(a.getKeyList().get(i) == o)
+				{
+					a.getKeyList().remove(o);
+				}
+			}
+		}
 		return false;
 	}
 
@@ -372,7 +381,7 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 	@Override
 	public Iterator<Integer> iterator() {
 		// TODO Auto-generated method stub
-		NavigableSet<Integer> a = new TreeSet<>();
+		NavigableSet<Integer> a = new TreeSet<>(); //리프노드에 맞춰 이동
 		for (ThreeWayBPlusTreeNode b: leafList)
 		{
 			for(int c : b.getKeyList())
@@ -380,7 +389,7 @@ public class ThreeWayBPlusTree implements NavigableSet<Integer> {
 				a.add(c);
 			}
 		}
-		return a.iterator();
+		return a.iterator(); //이터레이터 반환
 
 	}
 
